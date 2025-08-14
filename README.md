@@ -1,5 +1,17 @@
 # Decentralized-Escrow-System
 
+## Architecture
+```
+    buyer->>contract: deposit() 
+    if successful delivery
+        seller->>contract: confirmDelivery()
+        buyer->>contract: confirmReceipt()
+        seller->>contract: withdraw()
+    else UNsuccessful delivery
+        buyer->>contract: refund()
+    end
+```
+
 ## Installation
 
 ```
