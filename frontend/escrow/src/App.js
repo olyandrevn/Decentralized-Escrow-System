@@ -4,10 +4,9 @@ import { ethers } from 'ethers';
 // npm install ethers @metamask/providers
 
 // Константы (замените на реальные значения вашего контракта)
-const CONTRACT_ADDRESS = "0xcC853c5Bc61e1d1793B5552eEbe2361246445E7F"; // Адрес вашего развернутого контракта
+const CONTRACT_ADDRESS = "0xe78A0F7E598Cc8b0Bb87894B0F60dD2a88d6a8Ab"; // Адрес вашего развернутого контракта
 const CONTRACT_ABI = [
   "function deals(uint256) public view returns (address buyer, address seller, uint256 amount, uint8 state)",
-  // "uint256 public nextDealId = 1",
   "function nextDealId() public view returns (uint256)",
   "function createDeal(address seller) external payable returns(uint256)",
   "function completeDeal(uint256 dealId) external",
@@ -49,19 +48,19 @@ function App() {
   };
 
   // Загрузка сделок
+  // В функции loadDeals измените формирование объекта сделки:
   const loadDeals = async (contract) => {
-    let dealCount = await contract.nextDealId();
-    console.log("Next deal ID:", dealCount.toString());
+    const dealCount = Number(await contract.nextDealId());
     const dealsList = [];
     
     for (let i = 1; i < dealCount; i++) {
-      let deal = await contract.deals(i);
+      const deal = await contract.deals(i);
       dealsList.push({
         id: i,
-        buyer: deal.buyer,
-        seller: deal.seller,
+        buyer: deal.buyer.toLowerCase(), // Приводим к lowercase
+        seller: deal.seller.toLowerCase(),
         amount: ethers.formatEther(deal.amount),
-        state: ['CREATED', 'FUNDED', 'COMPLETED', 'REFUNDED'][deal.state]
+        state: ['CREATED', 'FUNDED', 'COMPLETED', 'REFUNDED'][Number(deal.state)] // Явное преобразование
       });
     }
     
@@ -150,7 +149,7 @@ function App() {
                     <p>Amount: {deal.amount} ETH</p>
                     <p>State: {deal.state}</p>
                     
-                    {deal.state === 'FUNDED' && deal.buyer === account && (
+                    {deal.state === 'FUNDED' && deal.buyer.toLowerCase() === account.toLowerCase() && (
                       <>
                         <button onClick={() => completeDeal(deal.id)}>Complete</button>
                         <button onClick={() => refundDeal(deal.id)}>Refund</button>

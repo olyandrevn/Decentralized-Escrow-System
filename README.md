@@ -16,9 +16,13 @@ npm install @openzeppelin/contracts
 
 ## Compile and Deploy contract
 
-```
-ganache # run local network
+You also have to use -d to determinalistic generate account addresses and -i to use the same network id.
 
+```
+ganache -d -i 123456 # run local network
+```
+
+```
 truffle init # add network to JSON
 truffle compile # compile contract
 truffle migrate --network development # deploy contract
